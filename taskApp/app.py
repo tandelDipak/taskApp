@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -8,6 +9,7 @@ import plotly.express as px
 import pandas as pd
 import plotly.graph_objs as go
 import requests
+import constants as C
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -16,15 +18,9 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 
-url = 'http://0.0.0.0:5005/api/v1/resources/'
-g1 = url + 'graph1'
-g2 = url + 'graph2/0-5/0'
-g3 = url + 'graph3'
-
-
 try:
-    response = requests.get(g1)
-    response2 = requests.get(g2)
+    ageData = requests.get(C.AGE_DATA)
+    barData = requests.get(C.BAR_DATA)
 except ConnectionRefusedError:
     pass
 
@@ -35,29 +31,20 @@ app.layout = html.Div(children=[
         figure=go.Figure(
             data=[go.Bar(
                 name='Male',
-                x=response.json()['male']['x'],
-                y=response.json()['male']['y']
+                x=ageData.json()['male']['x'],
+                y=ageData.json()['male']['y']
             ),
                 go.Bar(
                 name='Female',
-                x=response.json()['female']['x'],
-                y=response.json()['female']['y'],
+                x=ageData.json()['female']['x'],
+                y=ageData.json()['female']['y'],
             )],
             layout=go.Layout(
-                title={
-                    'text': "Age Histogram",
-                    'y': 0.85,
-                    'x': 0.5,
-                    'xanchor': 'center',
-                    'yanchor': 'top'
-                },
-                font=dict(
-                    family="Courier New, monospace",
-                    size=16,
-                ),
+                title=C.TITLE_STYLE,
+                font=C.FONT_STYLE,
                 xaxis_title="Age Range",
                 yaxis_title="Passanger Count",
-                legend_title="Gender",
+                legend_title="Gender"
             )
         )
     ),
@@ -67,8 +54,8 @@ app.layout = html.Div(children=[
                 id='graph2',
                 figure=go.Figure(
                     data=[go.Scatter(
-                        x=response2.json()['x'],
-                        y=response2.json()['y'],
+                        x=barData.json()['x'],
+                        y=barData.json()['y'],
                         mode='markers',
                         # marker_color=response2.json()['color']
                         # marker={'color': response2.json(
@@ -88,8 +75,8 @@ app.layout = html.Div(children=[
                 id='graph3',
                 figure=go.Figure(
                     data=[go.Pie(
-                        labels=response2.json()['labels'],
-                        values=response2.json()['values']
+                        labels=barData.json()['labels'],
+                        values=barData.json()['values']
                     )],
                     layout=go.Layout(
                         title="Passanger Class Distribution",
@@ -101,7 +88,7 @@ app.layout = html.Div(children=[
 ])
 
 
-@ app.callback([
+@app.callback([
     dash.dependencies.Output('graph3', 'figure'),
     dash.dependencies.Output('graph2', 'figure')],
     [dash.dependencies.Input('graph1', 'clickData')])
@@ -115,9 +102,9 @@ def updateOnClick(clickValue):
         ageRange = '0-5'
     print(isFemale, ageRange)
     if isFemale:
-        apiUrl = url + "graph2/" + ageRange + "/1"
+        apiUrl = C.API_BASE_URL + "graph2/" + ageRange + "/1"
     else:
-        apiUrl = url + "graph2/" + ageRange + "/0"
+        apiUrl = C.API_BASE_URL + "graph2/" + ageRange + "/0"
     print(apiUrl)
     response = requests.get(apiUrl)
     scatterPlot = go.Figure(
@@ -130,17 +117,8 @@ def updateOnClick(clickValue):
             #    [0, 'rgb(0,0,255)'], [1, 'rgb(255,0,0)']]}
         )],
         layout=go.Layout(
-            title={
-                'text': "Fare Distribution",
-                'y': 0.85,
-                'x': 0.5,
-                'xanchor': 'center',
-                'yanchor': 'top'
-            },
-            font=dict(
-                family="Courier New, monospace",
-                size=16,
-            ),
+            title=C.TITLE_STYLE,
+            font=C.FONT_STYLE,
             xaxis_title="Passanger ID",
             yaxis_title="Fare"
 
@@ -152,25 +130,12 @@ def updateOnClick(clickValue):
             values=response.json()['values']
         )],
         layout=go.Layout(
-            title={
-                'text': "Passanger Class Distribution",
-                'y': 0.85,
-                'x': 0.4,
-                'xanchor': 'center',
-                'yanchor': 'top'
-            },
-            font=dict(
-                family="Courier New, monospace",
-                size=16,
-            ),
+            title=C.TITLE_STYLE,
+            font=C.FONT_STYLE,
             legend_title="Passanger Class",
         )
     )
-    temp = type(scatterPlot)
-    if temp == None:
-        print("Its None")
-    else:
-        print("Else")
+
     return piePlot, scatterPlot
 
 
