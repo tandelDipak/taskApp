@@ -5,15 +5,17 @@ from flask import request, jsonify
 import pandas as pd
 import numpy as np
 import math
+import constants as C
 
 
-titanicData = pd.read_csv('../static/data/train.csv')
-upperLimit = math.ceil(titanicData['Age'].max()/5)*5
+titanicData = pd.read_csv(C.FILE_PATH)
+upperLimit = math.ceil(titanicData['Age'].max()/C.AGE_RANGE)*C.AGE_RANGE
 maleData = titanicData[titanicData['Sex'] == 'male']
 femaleData = titanicData[titanicData['Sex'] == 'female']
-maleCounts, bins = np.histogram(maleData.Age, bins=range(0, upperLimit+5, 5))
+maleCounts, bins = np.histogram(
+    maleData.Age, bins=range(0, upperLimit + C.AGE_RANGE, C.AGE_RANGE))
 femaleCounts, bins = np.histogram(
-    femaleData.Age, bins=range(0, upperLimit+5, 5))
+    femaleData.Age, bins=range(0, upperLimit + C.AGE_RANGE, C.AGE_RANGE))
 
 
 def binsValue(x): return f'{x}-{x+5}'

@@ -44,7 +44,20 @@ app.layout = html.Div(children=[
                 y=response.json()['female']['y'],
             )],
             layout=go.Layout(
-                title="Graph One"
+                title={
+                    'text': "Age Histogram",
+                    'y': 0.85,
+                    'x': 0.5,
+                    'xanchor': 'center',
+                    'yanchor': 'top'
+                },
+                font=dict(
+                    family="Courier New, monospace",
+                    size=16,
+                ),
+                xaxis_title="Age Range",
+                yaxis_title="Passanger Count",
+                legend_title="Gender",
             )
         )
     ),
@@ -57,11 +70,14 @@ app.layout = html.Div(children=[
                         x=response2.json()['x'],
                         y=response2.json()['y'],
                         mode='markers',
+                        # marker_color=response2.json()['color']
                         # marker={'color': response2.json(
                         # )['color'], 'colorscale':'Viridis'}
                     )],
                     layout=go.Layout(
-                        title="Call durations",
+                        title="Fare Distribution",
+                        xaxis_title="Passanger ID",
+                        yaxis_title="Fare"
 
                     )
                 )
@@ -76,7 +92,7 @@ app.layout = html.Div(children=[
                         values=response2.json()['values']
                     )],
                     layout=go.Layout(
-                        title="Cause Code"
+                        title="Passanger Class Distribution",
                     )
                 )
             )
@@ -85,7 +101,7 @@ app.layout = html.Div(children=[
 ])
 
 
-@app.callback([
+@ app.callback([
     dash.dependencies.Output('graph3', 'figure'),
     dash.dependencies.Output('graph2', 'figure')],
     [dash.dependencies.Input('graph1', 'clickData')])
@@ -109,11 +125,24 @@ def updateOnClick(clickValue):
             x=response.json()['x'],
             y=response.json()['y'],
             mode='markers',
+            # marker_color=response.json()['color']
             # marker={'color': response.json()['color'], 'colorscale':[
             #    [0, 'rgb(0,0,255)'], [1, 'rgb(255,0,0)']]}
         )],
         layout=go.Layout(
-            title="Call durations",
+            title={
+                'text': "Fare Distribution",
+                'y': 0.85,
+                'x': 0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'
+            },
+            font=dict(
+                family="Courier New, monospace",
+                size=16,
+            ),
+            xaxis_title="Passanger ID",
+            yaxis_title="Fare"
 
         )
     )
@@ -123,7 +152,18 @@ def updateOnClick(clickValue):
             values=response.json()['values']
         )],
         layout=go.Layout(
-            title="Cause Code"
+            title={
+                'text': "Passanger Class Distribution",
+                'y': 0.85,
+                'x': 0.4,
+                'xanchor': 'center',
+                'yanchor': 'top'
+            },
+            font=dict(
+                family="Courier New, monospace",
+                size=16,
+            ),
+            legend_title="Passanger Class",
         )
     )
     temp = type(scatterPlot)
