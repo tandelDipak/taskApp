@@ -16,12 +16,9 @@ femaleCounts, bins = np.histogram(
     femaleData.Age, bins=range(0, upperLimit + C.AGE_RANGE, C.AGE_RANGE))
 
 
-def binsValue(x): return f'{x}-{x+5}'
-
-
 binsArray = []
 for value in bins:
-    y = binsValue(value)
+    y = (lambda x: f'{x}-{x+5}')(value)
     binsArray.append(y)
 
 
@@ -45,12 +42,10 @@ def graph2(ageRange, isFemale):
 
 
 app = flask.Flask(__name__)
-#app.config["DEBUG"] = True
 
 
 @app.route('/api/v1/resources/graph1', methods=['GET'])
 def getGraph1Data():
-    # return jsonify({})
     data = {'male': {'x': binsArray, 'y': maleCounts.tolist()}, 'female': {
         'x': binsArray, 'y': femaleCounts.tolist()}}
     return jsonify(data)
