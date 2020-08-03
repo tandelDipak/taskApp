@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
 import flask
 from flask import request, jsonify
 import pandas as pd
