@@ -7,8 +7,8 @@ import constants as C
 try:
     ageData = requests.get(C.AGE_DATA)
     barData = requests.get(C.BAR_DATA)
-except ConnectionRefusedError:
-    pass
+except requests.exceptions.RequestException as e:
+    raise SystemExit(e)
 
 layout1 = html.Div(children=[
     dcc.Graph(
