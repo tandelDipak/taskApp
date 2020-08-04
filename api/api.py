@@ -44,21 +44,37 @@ def graph2(ageRange, isFemale):
 app = flask.Flask(__name__)
 
 
-@app.route('/api/v1/resources/graph1', methods=['GET'])
+@app.route('/api/v1/resources/titanic/summary', methods=['GET'])
+def getSummary():
+    fSummary = femaleData['Survived'].value_counts()
+    fSummary = fSummary.sort_index()
+    mSummary = maleData['Survived'].value_counts()
+    mSummary = mSummary.sort_index()
+    summaryData = [fSummary.sum() + mSummary.sum(), mSummary.sum(),
+                   fSummary.sum(), mSummary[0], mSummary[1], fSummary[0], fSummary[1]]
+    summary = [int(value) for value in summaryData]
+    labels = list(C.S_LABELS)
+    parents = list(C.S_PARENTS)
+    parents[0] = ''
+    print(type(summaryData), type(labels), type(parents))
+    return jsonify({'values': summary, 'labels': labels, 'parents': parents})
+
+
+@app.route('/api/v1/resources/titanic/ageDistribution', methods=['GET'])
 def getGraph1Data():
     data = {'male': {'x': binsArray, 'y': maleCounts.tolist()}, 'female': {
         'x': binsArray, 'y': femaleCounts.tolist()}}
     return jsonify(data)
 
 
-@app.route('/api/v1/resources/graph2/<string:ageRange>/<string:isFemale>', methods=['GET'])
+@app.route('/api/v1/resources/titanic/fare/<string:ageRange>/<string:isFemale>', methods=['GET'])
 def getGraph2Data(ageRange, isFemale):
     print(ageRange, isFemale)
     data, data1 = graph2(ageRange, isFemale)
     colorArray = map(lambda x: colorCoding[x], data['Embarked'].tolist())
     g2 = {'y': data['Fare'].tolist(), 'x': data['PassengerId'].tolist(), 'color': list(
-        colorArray), 'labels': ['First Class', 'Economy Class', 'General Class'], 'values': data1.tolist()}
+        colorArray), 'labels': C.C_LABELS, 'values': data1.tolist()}
     return jsonify(g2)
 
 
-app.run(host='0.0.0.0', port=5005, debug=True, use_reloader=False)
+app.run(host=C.HOST, port=C.PORT, debug=True, use_reloader=False)
