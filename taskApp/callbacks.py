@@ -9,11 +9,35 @@ from app import app
 TITLE_STYLE = C.TITLE_STYLE
 
 
+@app.callback(
+    [dash.dependencies.Output('memory', 'data')],
+    [dash.dependencies.Input('donut1', 'clickData')])
+def updateOnSummaryClick(clickValue):
+    try:
+        print(clickValue)
+        isSurvived = clickValue['points'][0]['i']
+    except TypeError:
+        isSurvived = 0
+    print(f'isSurvived {isSurvived}')
+    return isSurvived
+
+
+@app.callback(
+    [dash.dependencies.Output('graph1', 'figure')],
+    [dash.dependencies.Input('memory', 'data')])
+def receiveMemory(isSurvived):
+    if data is None:
+        print("Prevent Updata")
+        raise PreventUpdate
+    print(f'data is {data}')
+    return data
+
+
 @app.callback([
     dash.dependencies.Output('graph3', 'figure'),
     dash.dependencies.Output('graph2', 'figure')],
     [dash.dependencies.Input('graph1', 'clickData')])
-def updateOnClick(clickValue):
+def updateOnBarClick(clickValue):
     """ Generate figure based on click event data
 
     Args:
@@ -34,9 +58,9 @@ def updateOnClick(clickValue):
         ageRange = '0-5'
     print(isFemale, ageRange)
     if isFemale:
-        apiUrl = C.API_BASE_URL + "graph2/" + ageRange + "/1"
+        apiUrl = C.API_BASE_URL + "/fare/" + ageRange + "/1"
     else:
-        apiUrl = C.API_BASE_URL + "graph2/" + ageRange + "/0"
+        apiUrl = C.API_BASE_URL + "/fare/" + ageRange + "/0"
     print(apiUrl)
 
     # Get the data, if api not reachable prevent update
@@ -46,7 +70,7 @@ def updateOnClick(clickValue):
         print(e)
         raise dash.exceptions.PreventUpdate
 
-    TITLE_STYLE['text'] = 'Fare Distribution'
+    TITLE_STYLE['text'] = '<b>Fare Distribution<b>'
     scatterPlot = go.Figure(
         data=[go.Scatter(
             x=response.json()['x'],
@@ -60,13 +84,13 @@ def updateOnClick(clickValue):
         layout=go.Layout(
             title=TITLE_STYLE,
             font=C.FONT_STYLE,
-            xaxis_title="Passanger ID",
-            yaxis_title="Fare"
+            xaxis_title="<b>Passanger ID<b>",
+            yaxis_title="<b>Fare<b>"
 
         )
     )
 
-    TITLE_STYLE['text'] = 'Passanger Class Distribution'
+    TITLE_STYLE['text'] = '<b>Passanger Class Distribution<b>'
     piePlot = go.Figure(
         data=[go.Pie(
             labels=response.json()['labels'],
