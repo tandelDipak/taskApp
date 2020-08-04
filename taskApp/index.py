@@ -27,4 +27,5 @@ else:
 app.layout = layout1
 
 if __name__ == '__main__':
-    app.run_server(port=appConfig.APP_PORT, debug=appConfig.DEBUG)
+    app.run_server(host='0.0.0.0', port=appConfig.APP_PORT,
+                   debug=appConfig.DEBUG)

@@ -7,10 +7,33 @@ import constants as C
 try:
     ageData = requests.get(C.AGE_DATA)
     barData = requests.get(C.BAR_DATA)
+    summaryData = requests.get(C.SUMMARY)
 except requests.exceptions.RequestException as e:
     raise SystemExit(e)
 
 layout1 = html.Div(children=[
+    dcc.Store(id='memory'),
+    dcc.Graph(
+        id='donut1',
+        figure=go.Figure(
+            data=[go.Sunburst(
+                labels=summaryData.json()['labels'][0],
+                parents=summaryData.json()['parents'],
+                values=summaryData.json()['values'],
+                branchvalues="total"
+            )],
+            layout=go.Layout(
+                title=C.SUMMARY_TITLE,
+                font=C.FONT_STYLE,
+                margin={
+                    'b': 0
+                }
+            ),
+        ),
+        config={
+            'displayModeBar': False
+        }
+    ),
     dcc.Graph(
         id='graph1',
         figure=go.Figure(
@@ -27,11 +50,17 @@ layout1 = html.Div(children=[
             layout=go.Layout(
                 title=C.TITLE_STYLE,
                 font=C.FONT_STYLE,
-                xaxis_title="Age Range",
-                yaxis_title="Passanger Count",
-                legend_title="Gender"
+                xaxis_title="<b>Age Range<b>",
+                yaxis_title="<b>Passanger Count<b>",
+                legend_title="Gender",
+                margin={
+                    'b': 0
+                }
             )
-        )
+        ),
+        config={
+            'displayModeBar': False
+        }
     ),
     html.Div([
         html.Div([
@@ -52,8 +81,11 @@ layout1 = html.Div(children=[
                         yaxis_title="Fare"
 
                     )
-                )
-            )
+                ),
+                config={
+                    'displayModeBar': False
+                }
+            ),
         ], className="six columns"),
         html.Div([
             dcc.Graph(
@@ -66,7 +98,10 @@ layout1 = html.Div(children=[
                     layout=go.Layout(
                         title="Passanger Class Distribution",
                     )
-                )
+                ),
+                config={
+                    'displayModeBar': False
+                }
             )
         ], className="six columns")
     ], className="row")

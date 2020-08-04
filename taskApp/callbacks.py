@@ -9,30 +9,6 @@ from app import app
 TITLE_STYLE = C.TITLE_STYLE
 
 
-@app.callback(
-    [dash.dependencies.Output('memory', 'data')],
-    [dash.dependencies.Input('donut1', 'clickData')])
-def updateOnSummaryClick(clickValue):
-    try:
-        print(clickValue)
-        isSurvived = clickValue['points'][0]['i']
-    except TypeError:
-        isSurvived = 0
-    print(f'isSurvived {isSurvived}')
-    return isSurvived
-
-
-@app.callback(
-    [dash.dependencies.Output('graph1', 'figure')],
-    [dash.dependencies.Input('memory', 'data')])
-def receiveMemory(isSurvived):
-    if data is None:
-        print("Prevent Updata")
-        raise PreventUpdate
-    print(f'data is {data}')
-    return data
-
-
 @app.callback([
     dash.dependencies.Output('graph3', 'figure'),
     dash.dependencies.Output('graph2', 'figure')],
