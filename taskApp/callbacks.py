@@ -13,6 +13,15 @@ TITLE_STYLE = C.TITLE_STYLE
     [dash.dependencies.Output('session', 'data')],
     [dash.dependencies.Input('donut1', 'clickData')])
 def updateOn(clickData):
+    """ Store clicked event data on client side
+
+    Args:
+        clickData (dict): Data from latest click event on sunburst chart
+
+    Returns:
+        dict: Clicked point
+    """
+
     try:
         print(f'point number is {clickData["points"][0]["pointNumber"]}')
         return [{'point': clickData['points'][0]['pointNumber']}]
@@ -24,6 +33,17 @@ def updateOn(clickData):
     [dash.dependencies.Output('graph1', 'figure')],
     [dash.dependencies.Input('session', 'data')])
 def updateSession(data):
+    """ Generate figure based on clicked point of sunburst chart
+
+    Args:
+        data (dict): Clicked point of sunburst plot
+
+    Raises:
+        dash.exceptions.PreventUpdate: Prevent updates when API is not reachable
+
+    Returns:
+        Figure: Plotly figure object - Bar chart
+    """
     try:
         print(data)
         if data['point'] == 4 or data['point'] == 6:
@@ -79,13 +99,13 @@ def updateOnBarClick(clickValue, data):
     """ Generate figure based on click event data
 
     Args:
-        clickValue (dict): Data from latest click event
+        clickValue (dict): Data from latest click event on Bar chart
 
     Raises:
         dash.exceptions.PreventUpdate: Prevent updates when API is not reachable
 
     Returns:
-        Figure : Plotly Figure Object
+        Figure : Plotly Figure Object - Scatter chart and Pir chart
     """
     try:
         print(clickValue)
