@@ -12,7 +12,11 @@ except requests.exceptions.RequestException as e:
     raise SystemExit(e)
 
 layout1 = html.Div(children=[
-    dcc.Store(id='memory'),
+    dcc.Store(
+        id='session',
+        storage_type='session',
+        data=[{'isSurvived': 1, 'gender': 'male'}]
+    ),
     dcc.Graph(
         id='donut1',
         figure=go.Figure(

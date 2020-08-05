@@ -27,17 +27,40 @@ for index, value in enumerate(titanicData['Embarked'].unique()):
     colorCoding[value] = index
 
 
-def graph2(ageRange, isFemale):
+def graph2(ageRange, isFemale, point):
+    print(f'isFemale {isFemale}')
     lowerAge = int(ageRange.split('-')[0])
     upperAge = int(ageRange.split('-')[1])
-    if isFemale:
-        data = femaleData[(femaleData['Age'] >= lowerAge) &
-                          (femaleData['Age'] < upperAge)]
+    if point in ['3', '4', '5', '6']:
+        if point in ['3', '5']:
+            survived = 0
+        else:
+            survived = 1
+        print(f'survived {survived}')
+        if isFemale == '1':
+            data = femaleData[(femaleData['Age'] >= lowerAge) &
+                              (femaleData['Age'] < upperAge) &
+                              (femaleData['Survived'] == survived)]
+            print('Female Data')
+        else:
+            data = maleData[(maleData['Age'] >= lowerAge) &
+                            (maleData['Age'] < upperAge) &
+                            (maleData['Survived'] == survived)]
+            print('Male Data')
+        classCount = data.Pclass.value_counts()
+        classCount = classCount.sort_index()
     else:
-        data = maleData[(maleData['Age'] >= lowerAge) &
-                        (maleData['Age'] < upperAge)]
-    classCount = data.Pclass.value_counts()
-    classCount = classCount.sort_index()
+        if isFemale == '1':
+            data = femaleData[(femaleData['Age'] >= lowerAge) &
+                              (femaleData['Age'] < upperAge)]
+            print('Female Data')
+        else:
+            data = maleData[(maleData['Age'] >= lowerAge) &
+                            (maleData['Age'] < upperAge)]
+            print('Male Data')
+        classCount = data.Pclass.value_counts()
+        classCount = classCount.sort_index()
+
     return data, classCount
 
 
@@ -60,17 +83,30 @@ def getSummary():
     return jsonify({'values': summary, 'labels': labels, 'parents': parents})
 
 
-@app.route('/api/v1/resources/titanic/ageDistribution', methods=['GET'])
-def getGraph1Data():
-    data = {'male': {'x': binsArray, 'y': maleCounts.tolist()}, 'female': {
-        'x': binsArray, 'y': femaleCounts.tolist()}}
+@app.route('/api/v1/resources/titanic/ageDistribution/<string:point>', methods=['GET'])
+def getGraph1Data(point):
+    if point == '0' or point == '1' or point == '2':
+        data = {'male': {'x': binsArray, 'y': maleCounts.tolist()}, 'female': {
+            'x': binsArray, 'y': femaleCounts.tolist()}}
+    elif point in ['3', '4', '5', '6']:
+        print(f'Survival {C.POINTS[0][point]["Survived"]}')
+        femaleDied = femaleData[femaleData['Survived']
+                                == C.POINTS[0][point]['Survived']]
+        maleDied = maleData[maleData['Survived']
+                            == C.POINTS[0][point]['Survived']]
+        maleCount, bins = np.histogram(
+            maleDied.Age, bins=range(0, upperLimit + C.AGE_RANGE, C.AGE_RANGE))
+        femaleCount, bins = np.histogram(
+            femaleDied.Age, bins=range(0, upperLimit + C.AGE_RANGE, C.AGE_RANGE))
+        data = {'male': {'x': binsArray, 'y': maleCount.tolist()}, 'female': {
+            'x': binsArray, 'y': femaleCount.tolist()}}
     return jsonify(data)
 
 
-@app.route('/api/v1/resources/titanic/fare/<string:ageRange>/<string:isFemale>', methods=['GET'])
-def getGraph2Data(ageRange, isFemale):
-    print(ageRange, isFemale)
-    data, data1 = graph2(ageRange, isFemale)
+@app.route('/api/v1/resources/titanic/fare/<string:ageRange>/<string:isFemale>/<string:point>', methods=['GET'])
+def getGraph2Data(ageRange, isFemale, point):
+    print(ageRange, isFemale, point)
+    data, data1 = graph2(ageRange, isFemale, point)
     colorArray = map(lambda x: colorCoding[x], data['Embarked'].tolist())
     g2 = {'y': data['Fare'].tolist(), 'x': data['PassengerId'].tolist(), 'color': list(
         colorArray), 'labels': C.C_LABELS, 'values': data1.tolist()}
