@@ -4,9 +4,12 @@ import pandas as pd
 import numpy as np
 import math
 import constants as C
+import os
 
+dirname = os.path.dirname(os.path.abspath(__file__))
+filePath = os.path.join(dirname, C.FILE_PATH)
 
-titanicData = pd.read_csv(C.FILE_PATH)
+titanicData = pd.read_csv(filePath)
 upperLimit = math.ceil(titanicData['Age'].max()/C.AGE_RANGE)*C.AGE_RANGE
 maleData = titanicData[titanicData['Sex'] == 'male']
 femaleData = titanicData[titanicData['Sex'] == 'female']
