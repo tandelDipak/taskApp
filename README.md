@@ -8,5 +8,5 @@ Run the below commands in terminal
 3. python3 api.py
 4. open new terminal
 5. cd taskApp-master
-6. cd taskAPp
+6. cd taskApp
 7. python3 index.py
