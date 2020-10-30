@@ -10,3 +10,8 @@ Run the below commands in terminal
 5. cd taskApp-master
 6. cd taskApp
 7. python3 index.py
+
+Follow below step to create virtual enviornment
+- Install python3-venv
+- Create virtual enviornment
+- Activate enviornment
